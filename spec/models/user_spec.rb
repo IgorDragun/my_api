@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe User, type: :model do
   subject(:user) { build(:user) }
 
-  describe 'secure password' do
+  describe "secure password" do
     it { is_expected.to have_secure_password }
   end
 
-  describe 'associations' do
+  describe "associations" do
     it { is_expected.to have_many(:inventories) }
     it { is_expected.to have_one(:trade) }
     it { is_expected.to have_one(:user) }
   end
 
-  describe 'validates' do
+  describe "validates" do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:email) }
     it { is_expected.to validate_presence_of(:balance) }
@@ -32,8 +32,8 @@ RSpec.describe User, type: :model do
     it { is_expected.to validate_numericality_of(:balance) }
   end
 
-  context 'when create new record' do
-    it 'adds a token' do
+  context "when create new record" do
+    it "adds a token" do
       expect(user.token).not_to be_nil
     end
   end

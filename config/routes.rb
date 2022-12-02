@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :users, only: :create
       resources :inventories, only: :index
+      resources :shops, only: :index
     end
   end
 end

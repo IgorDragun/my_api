@@ -8,6 +8,6 @@ class ApplicationController < ActionController::API
   def authenticate!
     @user = User.find_by(token: params[:api_token])
 
-    render json: { status: 'failure', error: 'User does not exist' } unless @user
+    render json: { status: "failure", error: "User does not exist" }, status: :unprocessable_entity unless @user
   end
 end
