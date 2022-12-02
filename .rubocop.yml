@@ -1,0 +1,32 @@
+require:
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 2.7.6
+
+Style/Documentation:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false
+
+RSpec/Rails/InferredSpecType:
+  Enabled: false
+
+Rails/FilePath:
+  Enabled: false
+
+Style/GlobalStdStream:
+  Enabled: false
+
+Style/RedundantFetchBlock:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Enabled: false

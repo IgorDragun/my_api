@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   has_secure_password
 
-  has_many :inventories
-  has_one :trade
+  has_many :inventories, dependent: :destroy
+  has_one :trade, dependent: :destroy
   has_one :user, through: :trade
 
   validates :name, presence: true, uniqueness: true, length: { maximum: 50 }
   validates :email, presence: true, uniqueness: true, 'valid_email_2/email': true
   validates :balance, presence: true, numericality: { greater_than_or_equal_to: 0 }
-  validates :token, presence:  true
+  validates :token, presence: true
   validates :password, presence: true, length: { minimum: 8 }
   validates :password_confirmation, presence: true
 
@@ -17,7 +19,7 @@ class User < ApplicationRecord
   private
 
   def add_token
-    self.token = calculate_token if self.new_record? && self.token.blank?
+    self.token = calculate_token if new_record? && token.blank?
   end
 
   def calculate_token

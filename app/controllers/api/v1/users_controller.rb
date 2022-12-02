@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V1::UsersController < ApplicationController
   skip_before_action :authenticate!
 
@@ -5,9 +7,9 @@ class Api::V1::UsersController < ApplicationController
     @user = User.new(user_params)
 
     if @user.save
-      render json: { status: "success", api_token: @user.token }
+      render json: { status: 'success', api_token: @user.token }
     else
-      render json: { status: "failure", errors: @user.errors }, status: 422
+      render json: { status: 'failure', errors: @user.errors }, status: :unprocessable_entity
     end
   end
 
