@@ -9,6 +9,7 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true, 'valid_email_2/email': true
   validates :balance, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :token, presence:  true
+  validates :password, presence: true, length: { minimum: 8 }
   validates :password_confirmation, presence: true
 
   after_initialize :add_token
