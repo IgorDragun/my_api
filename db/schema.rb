@@ -15,7 +15,7 @@ ActiveRecord::Schema.define(version: 2022_12_01_133229) do
   create_table "inventories", force: :cascade do |t|
     t.string "name", null: false
     t.decimal "cost", precision: 10, scale: 2, null: false
-    t.integer "user_id"
+    t.integer "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_inventories_on_user_id"
@@ -25,7 +25,7 @@ ActiveRecord::Schema.define(version: 2022_12_01_133229) do
     t.string "name", null: false
     t.decimal "price", precision: 10, scale: 2, null: false
     t.integer "count", default: 0, null: false
-    t.integer "shop_id"
+    t.integer "shop_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["shop_id"], name: "index_items_on_shop_id"
@@ -41,7 +41,7 @@ ActiveRecord::Schema.define(version: 2022_12_01_133229) do
     t.integer "initiator_id", null: false
     t.integer "receiver_id", null: false
     t.string "status", default: "created", null: false
-    t.integer "user_id"
+    t.integer "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_trades_on_user_id"
@@ -52,9 +52,12 @@ ActiveRecord::Schema.define(version: 2022_12_01_133229) do
     t.string "email", null: false
     t.decimal "balance", precision: 10, scale: 2, default: "0.0", null: false
     t.string "password_digest"
-    t.string "token"
+    t.string "token", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "inventories", "users"
+  add_foreign_key "items", "shops"
+  add_foreign_key "trades", "users"
 end

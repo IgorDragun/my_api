@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   has_secure_password
 
+  has_many :inventories
   has_one :trade
   has_one :user, through: :trade
 

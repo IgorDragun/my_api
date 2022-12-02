@@ -4,8 +4,7 @@ class CreateItems < ActiveRecord::Migration[6.1]
       t.string :name, null: false, unique: true
       t.decimal :price, null: false, precision: 10, scale: 2
       t.integer :count, null: false, default: 0
-
-      t.belongs_to :shop
+      t.belongs_to :shop, null: false, foreign_key: true
 
       t.timestamps
     end
