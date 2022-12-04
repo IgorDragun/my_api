@@ -7,6 +7,10 @@ RSpec.describe Api::V1::InventoriesController, type: :controller do
   describe "GET /index" do
     subject(:send_request) { get :index, params: params }
 
+    before do
+      allow(User).to receive(:find_by).with(token: params[:api_token]).and_return(user)
+    end
+
     let(:params) { { api_token: user.token } }
     let(:user) { build(:user, inventories: [inventory]) }
     let(:inventory) { build(:inventory) }
@@ -14,16 +18,10 @@ RSpec.describe Api::V1::InventoriesController, type: :controller do
 
     include_examples "testing user authenticate"
 
-    context "when user exist" do
-      before do
-        allow(User).to receive(:find_by).with(token: params[:api_token]).and_return(user)
-      end
+    it "returns user's inventories" do
+      send_request
 
-      it "returns user's inventories" do
-        send_request
-
-        expect(response.body).to eq(result.to_json)
-      end
+      expect(response.body).to eq(result.to_json)
     end
   end
 end

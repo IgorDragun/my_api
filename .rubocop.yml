@@ -33,3 +33,6 @@ RSpec/NestedGroups:
 
 Style/StringLiterals:
   Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
