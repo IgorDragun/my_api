@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
+require "shared_examples/authenticate"
 
 RSpec.describe Api::V1::ItemsController, type: :controller do
   describe "GET /index" do
@@ -12,32 +13,36 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     let(:item) { build(:item) }
     let(:result) { { status: "success", items: [item] } }
 
-    before do
-      allow(User).to receive(:find_by).with(token: params[:api_token]).and_return(user)
-    end
+    include_examples "testing user authenticate"
 
-    context "when shop exist" do
+    context "when user exist" do
       before do
-        allow(Shop).to receive(:find_by).with(id: params[:shop_id]).and_return(shop)
+        allow(User).to receive(:find_by).with(token: params[:api_token]).and_return(user)
       end
 
-      it "returns shop;s items" do
-        send_request
+      context "when shop exist" do
+        before do
+          allow(Shop).to receive(:find_by).with(id: params[:shop_id]).and_return(shop)
+        end
 
-        expect(response.body).to eq result.to_json
+        it "returns shop's items" do
+          send_request
+
+          expect(response.body).to eq result.to_json
+        end
+
       end
 
-    end
+      context "when shop does not exist" do
+        before do
+          allow(Shop).to receive(:find_by).with(id: params[:shop_id]).and_return(nil)
+        end
 
-    context "when shop does not exist" do
-      before do
-        allow(Shop).to receive(:find_by).with(id: params[:shop_id]).and_return(nil)
-      end
+        it "returns the error" do
+          send_request
 
-      it "returns shop;s items" do
-        send_request
-
-        expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
       end
     end
   end
