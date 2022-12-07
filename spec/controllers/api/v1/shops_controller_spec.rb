@@ -14,11 +14,11 @@ RSpec.describe Api::V1::ShopsController, type: :controller do
     let(:params) { { api_token: user.token } }
     let(:user) { create(:user) }
     let!(:shop) { create(:shop) }
-    let(:result) { { status: "success", shops: [shop] } }
+    let(:result) { { shops: [shop] } }
 
     include_examples "testing user authenticate"
 
-    it "returns list of shops" do
+    it "returns the list of shops" do
       send_request
 
       expect(response.body).to eq(result.to_json)

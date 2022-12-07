@@ -21,7 +21,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     it "returns the error" do
       send_request
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:not_found)
     end
   end
 
@@ -29,7 +29,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     subject(:send_request) { get :index, params: params }
 
     let(:params) { { api_token: user.token, shop_id: shop.id } }
-    let(:result) { { status: "success", items: [item] } }
+    let(:result) { { items: [item] } }
 
     include_examples "testing user authenticate"
 
@@ -49,8 +49,8 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
   describe "GET /show" do
     subject(:send_request) { get :show, params: params }
 
-    let(:params) { { api_token: user.token, shop_id: shop.id, id: item.id } }
-    let(:result) { { status: "success", item: item } }
+    let(:params) { { api_token: user.token, shop_id: shop.id, item_id: item.id } }
+    let(:result) { { item: item } }
 
     include_examples "testing user authenticate"
 
@@ -64,13 +64,13 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       end
 
       context "when the item does not exist" do
-        let(:params) { { api_token: user.token, shop_id: shop.id, id: item.id + 1 } }
-        let(:result) { { status: "success", item: nil } }
+        let(:params) { { api_token: user.token, shop_id: shop.id, item_id: item.id + 1 } }
+        let(:result) { { item: nil } }
 
-        it "returns null" do
+        it "returns the error" do
           send_request
 
-          expect(response.body).to eq result.to_json
+          expect(response).to have_http_status(:not_found)
         end
       end
     end

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-class Api::V1::ShopsController < ApplicationController
+class Api::V1::ShopsController < BaseController
   def index
     @shops = Shop.all
 
-    render json: { status: "success", shops: @shops }
+    api_response({ shops: @shops })
   end
 end

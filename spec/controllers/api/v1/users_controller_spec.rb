@@ -19,7 +19,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
 
     context "when all the params are valid" do
-      context "when all the necessary params exist" do
+      context "when all necessary params exist" do
         let(:params) do
           { user:
             { email: "first_user@mail.ru", name: "First User", password: "12345678",
@@ -37,7 +37,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         end
       end
 
-      context "when not all the necessary params exist" do
+      context "when not all necessary params exist" do
         let(:params) do
           { user: { email: "first_user@mail.ru", name: "First User", password: "12345678" } }
         end

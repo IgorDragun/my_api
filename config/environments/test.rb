@@ -29,7 +29,7 @@ Rails.application.configure do
   config.action_controller.perform_caching = false
   config.cache_store = :null_store
 
-  # Raise exceptions instead of rendering exception templates.
+  # Raise api_exceptions instead of rendering exception templates.
   config.action_dispatch.show_exceptions = false
 
   # Disable request forgery protection in test environment.
@@ -48,7 +48,7 @@ Rails.application.configure do
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
-  # Raise exceptions for disallowed deprecations.
+  # Raise api_exceptions for disallowed deprecations.
   config.active_support.disallowed_deprecation = :raise
 
   # Tell Active Support which deprecation messages to disallow.

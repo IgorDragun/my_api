@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-class Api::V1::InventoriesController < ApplicationController
+class Api::V1::InventoriesController < BaseController
   def index
     @inventories = @user.inventories
 
-    render json: { status: "success", inventories: @inventories }
+    api_response({ inventories: @inventories })
   end
 end

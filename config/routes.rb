@@ -6,7 +6,10 @@ Rails.application.routes.draw do
       resources :users, only: :create
       resources :inventories, only: :index
       resources :shops, only: :index do
-        resources :items, only: %i[index show]
+        resources :items, only: :index do
+          get "show"
+          post "buy_item"
+        end
       end
     end
   end

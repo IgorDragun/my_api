@@ -14,7 +14,7 @@ RSpec.describe Api::V1::InventoriesController, type: :controller do
     let(:params) { { api_token: user.token } }
     let(:user) { build(:user, inventories: [inventory]) }
     let(:inventory) { build(:inventory) }
-    let(:result) { { status: "success", inventories: [inventory] } }
+    let(:result) { { inventories: [inventory] } }
 
     include_examples "testing user authenticate"
 
