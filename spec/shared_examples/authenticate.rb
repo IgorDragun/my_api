@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-shared_examples_for "testing user authenticate" do
+shared_examples_for "check user authenticate" do
   context "when the user does not exist" do
     before do
       allow(User).to receive(:find_by).with(token: params[:api_token]).and_return(nil)

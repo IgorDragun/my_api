@@ -16,7 +16,7 @@ RSpec.describe Api::V1::InventoriesController, type: :controller do
     let(:inventory) { build(:inventory) }
     let(:result) { { inventories: [inventory] } }
 
-    include_examples "testing user authenticate"
+    include_examples "check user authenticate"
 
     it "returns user's inventories" do
       send_request

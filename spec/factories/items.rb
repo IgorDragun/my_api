@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :item, class: "Item" do
-    name { "First item" }
+    name { "Name" }
     price { 100.00 }
-    count { 1 }
+    count { 10 }
   end
 end

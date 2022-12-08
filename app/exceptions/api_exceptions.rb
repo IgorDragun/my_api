@@ -5,4 +5,7 @@ module ApiExceptions
   class ShopNotFound < StandardError; end
   class ItemsNotFound < StandardError; end
   class ItemNotFound < StandardError; end
+  class NotEnoughMoney < StandardError; end
+  class NotEnoughItems < StandardError; end
+  class ItemAlreadyBought < StandardError; end
 end

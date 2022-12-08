@@ -19,4 +19,10 @@ RSpec.describe Item, type: :model do
     it { is_expected.to validate_numericality_of(:price) }
     it { is_expected.to validate_numericality_of(:count) }
   end
+
+  describe "#count_reduce" do
+    it "reduces count of item by one" do
+      expect { item.count_reduce }.to change(item, :count).by(-1)
+    end
+  end
 end

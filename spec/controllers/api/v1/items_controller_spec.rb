@@ -2,6 +2,8 @@
 
 require "rails_helper"
 require "shared_examples/authenticate"
+require "shared_examples/shops"
+require "shared_examples/items"
 
 RSpec.describe Api::V1::ItemsController, type: :controller do
   before do
@@ -9,40 +11,24 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     allow(Shop).to receive(:find_by).with(id: params[:shop_id]).and_return(shop)
   end
 
-  let(:user) { build(:user) }
-  let(:shop) { create(:shop, items: [item]) }
-  let(:item) { build(:item) }
-
-  shared_examples "it returns the error" do
-    before do
-      allow(Shop).to receive(:find_by).with(id: params[:shop_id]).and_return(nil)
-    end
-
-    it "returns the error" do
-      send_request
-
-      expect(response).to have_http_status(:not_found)
-    end
-  end
+  let(:user) { create(:user) }
+  let(:shop) { create(:shop) }
+  let(:items) { shop.items }
+  let(:item) { create(:item, shop_id: shop.id) }
 
   describe "GET /index" do
     subject(:send_request) { get :index, params: params }
 
     let(:params) { { api_token: user.token, shop_id: shop.id } }
-    let(:result) { { items: [item] } }
+    let(:result) { { items: items } }
 
-    include_examples "testing user authenticate"
+    include_examples "check user authenticate"
+    include_examples "check shop availability"
 
-    context "when the shop exist" do
-      it "returns the shop's items" do
-        send_request
+    it "returns the shop's items" do
+      send_request
 
-        expect(response.body).to eq result.to_json
-      end
-    end
-
-    context "when the shop does not exist" do
-      include_examples "it returns the error"
+      expect(response.body).to eq result.to_json
     end
   end
 
@@ -52,31 +38,63 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     let(:params) { { api_token: user.token, shop_id: shop.id, item_id: item.id } }
     let(:result) { { item: item } }
 
-    include_examples "testing user authenticate"
+    include_examples "check user authenticate"
+    include_examples "check shop availability"
+    include_examples "check item availability"
 
-    context "when the shop exist" do
-      context "when the item exist" do
-        it "returns the item" do
-          send_request
+    it "returns the item" do
+      send_request
 
-          expect(response.body).to eq result.to_json
-        end
+      expect(response.body).to eq result.to_json
+    end
+  end
+
+  describe "POST /buy_item" do
+    subject(:send_request) { post :buy_item, params: params }
+
+    let(:params) { { api_token: user.token, shop_id: shop.id, item_id: item.id } }
+    let!(:item_count) { item.count }
+
+    include_examples "check user authenticate"
+    include_examples "check shop availability"
+    include_examples "check item availability"
+
+    context "when the item was successfully bought" do
+      it "reduces the user balance" do
+        expect { send_request }.to change(user, :balance).by(- item.price)
       end
 
-      context "when the item does not exist" do
-        let(:params) { { api_token: user.token, shop_id: shop.id, item_id: item.id + 1 } }
-        let(:result) { { item: nil } }
+      it "reduces the item count" do
+        send_request
+        item.reload
 
-        it "returns the error" do
-          send_request
+        expect(item.count).to eq(item_count - 1)
+      end
 
-          expect(response).to have_http_status(:not_found)
-        end
+      it "increases the user inventories count" do
+        expect { send_request }.to change(user.inventories, :count).by(1)
       end
     end
 
-    context "when the shop does not exist" do
-      include_examples "it returns the error"
+    # rubocop:disable RSpec/LetSetup
+    context "when the item is already bought" do
+      let(:inventories) { user.inventories }
+      let!(:inventory) { create(:inventory, name: item.name, user_id: user.id) }
+
+      include_examples "check item buy availability"
+    end
+    # rubocop:enable RSpec/LetSetup
+
+    context "when the user does not have enough money" do
+      let(:user) { create(:user, balance: item.price - 1) }
+
+      include_examples "check item buy availability"
+    end
+
+    context "when the item count is zero" do
+      let(:item) { create(:item, shop_id: shop.id, count: 0) }
+
+      include_examples "check item buy availability"
     end
   end
 end

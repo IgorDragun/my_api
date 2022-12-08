@@ -37,4 +37,12 @@ RSpec.describe User, type: :model do
       expect(user.token).not_to be_nil
     end
   end
+
+  describe "#withdrawal" do
+    let(:item) { build(:item) }
+
+    it "reduces user balance by item price" do
+      expect { user.withdrawal(item.price) }.to change(user, :balance).by(- item.price)
+    end
+  end
 end

@@ -17,11 +17,7 @@ class User < ApplicationRecord
   after_initialize :add_token
 
   def withdrawal(sum)
-    update(balance: self.balance -= sum)
-  end
-
-  def enough_balance?(sum)
-    balance >= sum
+    update!(balance: self.balance -= sum)
   end
 
   private

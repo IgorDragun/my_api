@@ -1,14 +1,27 @@
 en:
   exceptions:
     user_not_found:
-      message: "User not found"
+      message: "User not found."
       status: 401
     shop_not_found:
-      message: "Shop not found"
+      message: "Shop not found."
       status: 404
     items_not_found:
-      message: "Shop does not contain any items"
+      message: "Shop does not contain any items."
       status: 404
     item_not_found:
-      message: "Item not found"
+      message: "Item not found."
       status: 404
+    not_enough_money:
+      message: "Do not enough money."
+      status: 422
+    not_enough_items:
+      message: "Do not enough items."
+      status: 422
+    item_already_bought:
+      message: "Item already bought."
+      status: 422
+
+  messages:
+    item_was_bought: "Item was successfully bought. You can see it in your inventories."
+    something_was_wrong: "Something was wrong. Check the data and try again."

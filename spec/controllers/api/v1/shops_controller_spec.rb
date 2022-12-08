@@ -16,7 +16,7 @@ RSpec.describe Api::V1::ShopsController, type: :controller do
     let!(:shop) { create(:shop) }
     let(:result) { { shops: [shop] } }
 
-    include_examples "testing user authenticate"
+    include_examples "check user authenticate"
 
     it "returns the list of shops" do
       send_request

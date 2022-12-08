@@ -14,11 +14,17 @@ class Api::V1::ItemsController < BaseController
   end
 
   def buy_item
-    result = complete_purchase
+    check_user_bought_items
+    check_user_balance
+    check_item_count
 
-    render json: { status: "success", messages: "Item was bought" } if result
-    render json: { status: "failure", messages: "Something was wrong" } unless result
+    result = perform_transaction
 
+    if result
+      render json: { message: I18n.t("messages.item_was_bought") }
+    else
+      render json: { message: I18n.t("messages.something_was_wrong") }
+    end
   end
 
   private
@@ -36,32 +42,32 @@ class Api::V1::ItemsController < BaseController
   def set_item
     raise ApiExceptions::ItemsNotFound if @items.blank?
 
-    @item = @items.find_by(id: params[:item_id])
+    @item = @items.find_by(id: params[:item_id].to_i)
 
     raise ApiExceptions::ItemNotFound unless @item
   end
 
-  def complete_purchase
-    if item_count_positive? && enough_user_balance?
-      perform_transaction
-    else
-      return { json: { status: "failure", error: "Not enough money" }, status: :unprocessable_entity } unless enough_user_balance?
-      return { json: { status: "failure", error: "Not enough items" }, status: :unprocessable_entity } unless item_count_positive?
-    end
+  def check_user_bought_items
+    raise ApiExceptions::ItemAlreadyBought if @user.inventories.find_by(name: @item.name)
   end
 
-  def item_count_positive?
-    @item.positive?
+  def check_user_balance
+    raise ApiExceptions::NotEnoughMoney if @user.balance < @item.price
   end
 
-  def enough_user_balance?
-    @user.enough_balance?(@item.price)
+  def check_item_count
+    raise ApiExceptions::NotEnoughItems unless @item.count.positive?
   end
 
   def perform_transaction
     ActiveRecord::Base.transaction do
       @user.withdrawal(@item.price)
-      @item.reduction
+      @item.count_reduce
+      @user.inventories.create!(name: @item.name, cost: @item.price)
+      true
+
+    rescue StandardError
+      false
     end
   end
 end
