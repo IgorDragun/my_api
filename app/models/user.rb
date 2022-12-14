@@ -4,8 +4,10 @@ class User < ApplicationRecord
   has_secure_password
 
   has_many :inventories, dependent: :destroy
-  has_one :trade, dependent: :destroy
-  has_one :user, through: :trade
+  has_many :active_trades, class_name: "Trade", foreign_key: :buyer_id, dependent: :destroy
+  has_many :passive_trades, class_name: "Trade", foreign_key: :seller_id, dependent: :destroy
+  has_many :sellers, through: :active_trades
+  has_many :buyers, through: :passive_trades
 
   validates :name, presence: true, uniqueness: true, length: { maximum: 50 }
   validates :email, presence: true, uniqueness: true, 'valid_email_2/email': true

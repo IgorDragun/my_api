@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 class Trade < ApplicationRecord
-  # rubocop:disable Rails/HasManyOrHasOneDependent
-  has_one :user
-  # rubocop:enable Rails/HasManyOrHasOneDependent
+  belongs_to :buyer, class_name: "User"
+  belongs_to :seller, class_name: "User"
 
-  validates :initiator_id, presence: true, numericality: { only_integer: true }
-  validates :receiver_id, presence: true, numericality: { only_integer: true }
-  validates :status, presence: true
+  validates :buyer_id, presence: true, numericality: { only_integer: true }
+  validates :seller_id, presence: true, numericality: { only_integer: true }
+  validates :seller_inventory_id, presence: true, numericality: { only_integer: true }
+  validates :offered_price, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :status, presence: true, numericality: { only_integer: true }
 end

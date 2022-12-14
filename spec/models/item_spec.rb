@@ -20,6 +20,10 @@ RSpec.describe Item, type: :model do
     it { is_expected.to validate_numericality_of(:count) }
   end
 
+  describe "associations" do
+    it { is_expected.to belong_to(:shop) }
+  end
+
   describe "#count_reduce" do
     it "reduces count of item by one" do
       expect { item.count_reduce }.to change(item, :count).by(-1)

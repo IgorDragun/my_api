@@ -10,13 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20_221_201_133_229) do
+ActiveRecord::Schema.define(version: 2022_12_01_133229) do
+
   create_table "inventories", force: :cascade do |t|
     t.string "name", null: false
     t.decimal "cost", precision: 10, scale: 2, null: false
     t.integer "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_inventories_on_name"
     t.index ["user_id"], name: "index_inventories_on_user_id"
   end
 
@@ -37,13 +39,15 @@ ActiveRecord::Schema.define(version: 20_221_201_133_229) do
   end
 
   create_table "trades", force: :cascade do |t|
-    t.integer "initiator_id", null: false
-    t.integer "receiver_id", null: false
-    t.string "status", default: "created", null: false
-    t.integer "user_id", null: false
+    t.integer "buyer_id", null: false
+    t.integer "seller_id", null: false
+    t.integer "seller_inventory_id", null: false
+    t.decimal "offered_price", precision: 10, scale: 2, null: false
+    t.integer "status", default: 1, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_trades_on_user_id"
+    t.index ["buyer_id"], name: "index_trades_on_buyer_id"
+    t.index ["seller_id"], name: "index_trades_on_seller_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -54,9 +58,9 @@ ActiveRecord::Schema.define(version: 20_221_201_133_229) do
     t.string "token", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["token"], name: "index_users_on_token"
   end
 
   add_foreign_key "inventories", "users"
   add_foreign_key "items", "shops"
-  add_foreign_key "trades", "users"
 end

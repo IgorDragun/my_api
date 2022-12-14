@@ -10,4 +10,8 @@ RSpec.describe Shop, type: :model do
     it { is_expected.to validate_length_of(:name) }
     it { is_expected.to validate_uniqueness_of(:name) }
   end
+
+  describe "associations" do
+    it { is_expected.to have_many(:items) }
+  end
 end

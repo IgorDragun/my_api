@@ -11,8 +11,10 @@ RSpec.describe User, type: :model do
 
   describe "associations" do
     it { is_expected.to have_many(:inventories) }
-    it { is_expected.to have_one(:trade) }
-    it { is_expected.to have_one(:user) }
+    it { is_expected.to have_many(:active_trades) }
+    it { is_expected.to have_many(:passive_trades) }
+    it { is_expected.to have_many(:sellers) }
+    it { is_expected.to have_many(:buyers) }
   end
 
   describe "validates" do
