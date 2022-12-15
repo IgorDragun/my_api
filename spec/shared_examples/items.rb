@@ -3,7 +3,6 @@
 shared_examples_for "check item availability" do
   context "when the item does not exist" do
     let(:params) { { api_token: user.token, shop_id: shop.id, item_id: item.id + 1 } }
-    let(:result) { { item: nil } }
 
     it "returns the error" do
       send_request

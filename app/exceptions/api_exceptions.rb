@@ -8,4 +8,6 @@ module ApiExceptions
   class NotEnoughMoney < StandardError; end
   class NotEnoughItems < StandardError; end
   class ItemAlreadyBought < StandardError; end
+  class SellerNotFound < StandardError; end
+  class InventoryNotFound < StandardError; end
 end

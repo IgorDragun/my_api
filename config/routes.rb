@@ -11,6 +11,7 @@ Rails.application.routes.draw do
           post "buy_item"
         end
       end
+      resources :trades, only: :create
     end
   end
 end

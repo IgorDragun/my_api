@@ -21,6 +21,12 @@ en:
     item_already_bought:
       message: "Item already bought."
       status: 422
+    seller_not_found:
+      message: "Seller not found."
+      status: 404
+    inventory_not_found:
+      message: "Inventory not found."
+      status: 404
 
   messages:
     item_was_bought: "Item was successfully bought. You can see it in your inventories."

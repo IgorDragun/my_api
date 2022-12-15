@@ -10,6 +10,8 @@ class BaseController < ApplicationController
   rescue_from ApiExceptions::NotEnoughMoney, with: :respond_with_exception
   rescue_from ApiExceptions::NotEnoughItems, with: :respond_with_exception
   rescue_from ApiExceptions::ItemAlreadyBought, with: :respond_with_exception
+  rescue_from ApiExceptions::SellerNotFound, with: :respond_with_exception
+  rescue_from ApiExceptions::InventoryNotFound, with: :respond_with_exception
 
   def api_response(object)
     status = object.key?(:error) || object.key?(:errors) ? :unprocessable_entity : :ok
