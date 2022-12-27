@@ -10,4 +10,7 @@ module ApiExceptions
   class ItemAlreadyBought < StandardError; end
   class SellerNotFound < StandardError; end
   class InventoryNotFound < StandardError; end
+  class ActiveTradesDoNotExist < StandardError; end
+  class TradeNotFound < StandardError; end
+  class TradeCanNotBeDeclined < StandardError; end
 end

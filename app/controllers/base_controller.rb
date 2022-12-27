@@ -12,6 +12,9 @@ class BaseController < ApplicationController
   rescue_from ApiExceptions::ItemAlreadyBought, with: :respond_with_exception
   rescue_from ApiExceptions::SellerNotFound, with: :respond_with_exception
   rescue_from ApiExceptions::InventoryNotFound, with: :respond_with_exception
+  rescue_from ApiExceptions::ActiveTradesDoNotExist, with: :respond_with_exception
+  rescue_from ApiExceptions::TradeNotFound, with: :respond_with_exception
+  rescue_from ApiExceptions::TradeCanNotBeDeclined, with: :respond_with_exception
 
   def api_response(object)
     status = object.key?(:error) || object.key?(:errors) ? :unprocessable_entity : :ok

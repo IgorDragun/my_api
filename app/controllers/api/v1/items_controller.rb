@@ -14,16 +14,16 @@ class Api::V1::ItemsController < BaseController
   end
 
   def buy_item
-    check_user_bought_items
+    check_user_items
     check_user_balance
     check_item_count
 
     result = perform_transaction
 
     if result
-      render json: { message: I18n.t("messages.item_was_bought") }
+      api_response(message: I18n.t("messages.items.item_was_bought"))
     else
-      render json: { message: I18n.t("messages.something_was_wrong") }
+      api_response(message: I18n.t("messages.something_was_wrong"))
     end
   end
 
@@ -47,7 +47,7 @@ class Api::V1::ItemsController < BaseController
     raise ApiExceptions::ItemNotFound unless @item
   end
 
-  def check_user_bought_items
+  def check_user_items
     raise ApiExceptions::ItemAlreadyBought if @user.inventories.find_by(name: @item.name)
   end
 

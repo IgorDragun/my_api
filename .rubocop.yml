@@ -36,3 +36,6 @@ Style/StringLiterals:
 
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
+
+Rails/InverseOf:
+  Enabled: false

@@ -27,7 +27,20 @@ en:
     inventory_not_found:
       message: "Inventory not found."
       status: 404
+    active_trades_do_not_exist:
+      message: "Trades do not exist."
+      status: 404
+    trade_not_found:
+      message: "Trade not found."
+      status: 404
+    trade_can_not_be_declined:
+      message: "Trade can not be declined."
+      status: 422
 
   messages:
-    item_was_bought: "Item was successfully bought. You can see it in your inventories."
+    items:
+      item_was_bought: "Item was successfully bought. You can see it in your inventories."
+    trades:
+      trade_was_declined:
+        "Trade was successfully declined."
     something_was_wrong: "Something was wrong. Check the data and try again."

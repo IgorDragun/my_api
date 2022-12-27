@@ -11,7 +11,9 @@ Rails.application.routes.draw do
           post "buy_item"
         end
       end
-      resources :trades, only: :create
+      resources :trades, only: :create do
+        post "decline"
+      end
     end
   end
 end
