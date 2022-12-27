@@ -81,8 +81,8 @@ RSpec.describe Api::V1::TradesController, type: :controller do
     end
   end
 
-  describe "POST /decline" do
-    subject(:send_request) { post :decline, params: params }
+  describe "POST /cancel" do
+    subject(:send_request) { post :cancel, params: params }
 
     let(:params) { { api_token: user.token, trade_id: trade.id } }
     let(:user) { create(:user) }
@@ -95,7 +95,7 @@ RSpec.describe Api::V1::TradesController, type: :controller do
       send_request
       trade.reload
 
-      expect(trade.status.to_sym).to eq(:declined_by_initiator)
+      expect(trade.status.to_sym).to eq(:canceled_by_initiator)
     end
 
     context "when user does not have active trades" do
@@ -120,6 +120,54 @@ RSpec.describe Api::V1::TradesController, type: :controller do
 
     context "when required trade's status is not waiting_for_accept" do
       let(:trade) { create(:trade, buyer_id: user.id, seller_id: seller.id, status: 2) }
+
+      it "returns the error" do
+        send_request
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+  end
+
+  describe "POST /decline" do
+    subject(:send_request) { post :decline, params: params }
+
+    let(:params) { { api_token: user.token, trade_id: trade.id } }
+    let(:user) { create(:user) }
+    let(:trade) { create(:trade, buyer_id: buyer.id, seller_id: user.id) }
+    let(:buyer) { create(:user, name: "Buyer", email: "buyer@gmail.com") }
+
+    include_examples "check user authenticate"
+
+    it "changes the status" do
+      send_request
+      trade.reload
+
+      expect(trade.status.to_sym).to eq(:declined_by_receiver)
+    end
+
+    context "when user does not have passive trades" do
+      let(:trade) { build_stubbed(:trade, seller_id: user.id + 1) }
+
+      it "returns the error" do
+        send_request
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when user's passive trades do not include required trade" do
+      let(:params) { { api_token: user.token, trade_id: trade.id + 1 } }
+
+      it "returns the error" do
+        send_request
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when required trade's status is not waiting_for_accept" do
+      let(:trade) { create(:trade, buyer_id: buyer.id, seller_id: user.id, status: 2) }
 
       it "returns the error" do
         send_request

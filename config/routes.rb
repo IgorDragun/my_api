@@ -12,6 +12,7 @@ Rails.application.routes.draw do
         end
       end
       resources :trades, only: :create do
+        post "cancel"
         post "decline"
       end
     end

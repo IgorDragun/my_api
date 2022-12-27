@@ -13,7 +13,7 @@ class Trade < ApplicationRecord
   enum status: {
     waiting_for_accept: 1,
     accepted: 2,
-    canceled_by_receiver: 3,
-    declined_by_initiator: 4
+    declined_by_receiver: 3,
+    canceled_by_initiator: 4
   }
 end
