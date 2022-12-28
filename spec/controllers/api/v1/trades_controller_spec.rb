@@ -81,6 +81,64 @@ RSpec.describe Api::V1::TradesController, type: :controller do
     end
   end
 
+  describe "GET /active_trades" do
+    subject(:send_request) { get :active_trades, params: params }
+
+    let(:params) { { api_token: user.token } }
+    let(:user) { create(:user) }
+    let(:seller) { create(:user, name: "Seller", email: "seller@gmail.com") }
+
+    include_examples "check user authenticate"
+
+    context "when user has active trades" do
+      let!(:trade) { create(:trade, buyer_id: user.id, seller_id: seller.id) }
+      let(:result) { { active_trades: [trade] } }
+
+      it "returns active trades list" do
+        send_request
+
+        expect(response.body).to eq(result.to_json)
+      end
+    end
+
+    context "when user does not have active trades" do
+      it "returns the error" do
+        send_request
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe "GET /passive_trades" do
+    subject(:send_request) { get :passive_trades, params: params }
+
+    let(:params) { { api_token: user.token } }
+    let!(:user) { create(:user) }
+    let(:buyer) { create(:user, name: "Buyer", email: "buyer@gmail.com") }
+
+    include_examples "check user authenticate"
+
+    context "when user has passive trades" do
+      let!(:trade) { create(:trade, buyer_id: buyer.id, seller_id: user.id) }
+      let(:result) { { passive_trades: [trade] } }
+
+      it "returns passive trades list" do
+        send_request
+
+        expect(response.body).to eq(result.to_json)
+      end
+    end
+
+    context "when user does not have passive trades" do
+      it "returns the error" do
+        send_request
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
   describe "POST /cancel" do
     subject(:send_request) { post :cancel, params: params }
 

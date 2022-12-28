@@ -3,10 +3,11 @@
 class Api::V1::TradesController < BaseController
   before_action :find_seller, only: :create
   before_action :find_seller_inventory, only: :create
-  before_action :find_all_active_trades_by_user, only: :cancel
+  before_action :find_all_active_trades_by_user, only: %i[cancel active_trades]
   before_action :find_required_active_trade_by_user, only: :cancel
-  before_action :find_all_passive_trades_by_user, only: :decline
+  before_action :find_all_passive_trades_by_user, only: %i[decline passive_trades]
   before_action :find_required_passive_trade_by_user, only: :decline
+
   def create
     @trade = Trade.new(trade_params)
 
@@ -15,6 +16,14 @@ class Api::V1::TradesController < BaseController
     else
       api_response(errors: @trade.errors)
     end
+  end
+
+  def active_trades
+    api_response(active_trades: @active_trades)
+  end
+
+  def passive_trades
+    api_response(passive_trades: @passive_trades)
   end
 
   def cancel

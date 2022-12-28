@@ -12,6 +12,8 @@ Rails.application.routes.draw do
         end
       end
       resources :trades, only: :create do
+        get "active_trades", on: :collection
+        get "passive_trades", on: :collection
         post "cancel"
         post "decline"
       end
