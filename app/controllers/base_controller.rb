@@ -9,6 +9,7 @@ class BaseController < ApplicationController
   rescue_from ApiExceptions::ItemsNotFound, with: :respond_with_exception
   rescue_from ApiExceptions::ItemNotFound, with: :respond_with_exception
   rescue_from ApiExceptions::NotEnoughMoney, with: :respond_with_exception
+  rescue_from ApiExceptions::BuyerDoesNotHaveEnoughMoney, with: :respond_with_exception
   rescue_from ApiExceptions::NotEnoughItems, with: :respond_with_exception
   rescue_from ApiExceptions::ItemAlreadyBought, with: :respond_with_exception
   rescue_from ApiExceptions::SellerNotFound, with: :respond_with_exception
@@ -18,6 +19,7 @@ class BaseController < ApplicationController
   rescue_from ApiExceptions::TradeNotFound, with: :respond_with_exception
   rescue_from ApiExceptions::TradeCanNotBeCanceled, with: :respond_with_exception
   rescue_from ApiExceptions::TradeCanNotBeDeclined, with: :respond_with_exception
+  rescue_from ApiExceptions::TradeCanNotBeAccepted, with: :respond_with_exception
 
   def api_response(object)
     status = object.key?(:error) || object.key?(:errors) ? :unprocessable_entity : :ok

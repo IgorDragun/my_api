@@ -7,6 +7,7 @@ module ApiExceptions
   class ItemsNotFound < StandardError; end
   class ItemNotFound < StandardError; end
   class NotEnoughMoney < StandardError; end
+  class BuyerDoesNotHaveEnoughMoney < StandardError; end
   class NotEnoughItems < StandardError; end
   class ItemAlreadyBought < StandardError; end
   class SellerNotFound < StandardError; end
@@ -16,4 +17,5 @@ module ApiExceptions
   class TradeNotFound < StandardError; end
   class TradeCanNotBeCanceled < StandardError; end
   class TradeCanNotBeDeclined < StandardError; end
+  class TradeCanNotBeAccepted < StandardError; end
 end

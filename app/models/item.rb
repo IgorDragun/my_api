@@ -8,6 +8,6 @@ class Item < ApplicationRecord
   validates :count, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   def count_reduce
-    update!(count: self.count -= 1)
+    update!(count: count - 1)
   end
 end

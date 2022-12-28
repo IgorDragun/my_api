@@ -3,7 +3,7 @@
 class CreateInventories < ActiveRecord::Migration[6.1]
   def change
     create_table :inventories do |t|
-      t.string :name, null: false, unique: true
+      t.string :name, null: false
       t.decimal :cost, null: false, precision: 10, scale: 2
       t.belongs_to :user, null: false, foreign_key: true
 

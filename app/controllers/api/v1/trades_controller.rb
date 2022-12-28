@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
+
 class Api::V1::TradesController < BaseController
   before_action :find_seller, only: :create
   before_action :find_seller_inventory, only: :create
   before_action :find_all_active_trades_by_user, only: %i[cancel active_trades]
   before_action :find_required_active_trade_by_user, only: :cancel
-  before_action :find_all_passive_trades_by_user, only: %i[decline passive_trades]
-  before_action :find_required_passive_trade_by_user, only: :decline
+  before_action :find_all_passive_trades_by_user, only: %i[decline passive_trades accept]
+  before_action :find_required_passive_trade_by_user, only: %i[decline accept]
 
   def create
     @trade = Trade.new(trade_params)
@@ -24,6 +26,19 @@ class Api::V1::TradesController < BaseController
 
   def passive_trades
     api_response(passive_trades: @passive_trades)
+  end
+
+  def accept
+    check_trade_status!(:accept)
+    check_inventory!
+    check_buyer_balance!
+    result = perform_transaction
+
+    if result
+      api_response(message: I18n.t("messages.trades.trade_was_accepted"))
+    else
+      api_response(message: I18n.t("messages.something_was_wrong"))
+    end
   end
 
   def cancel
@@ -54,8 +69,36 @@ class Api::V1::TradesController < BaseController
       raise ApiExceptions::TradeCanNotBeCanceled if @active_trade.status.to_sym != :waiting_for_accept
     when :decline
       raise ApiExceptions::TradeCanNotBeDeclined if @passive_trade.status.to_sym != :waiting_for_accept
+    when :accept
+      raise ApiExceptions::TradeCanNotBeAccepted if @passive_trade.status.to_sym != :waiting_for_accept
     else
       raise ApiExceptions::CommonError
+    end
+  end
+
+  def check_inventory!
+    @user_inventory ||= @user.inventories.find_by(id: @passive_trade.seller_inventory_id)
+
+    raise ApiExceptions::InventoryNotFound unless @user_inventory
+  end
+
+  def check_buyer_balance!
+    @buyer ||= User.find_by(id: @passive_trade.buyer_id)
+
+    raise ApiExceptions::UserNotFound unless @buyer
+    raise ApiExceptions::BuyerDoesNotHaveEnoughMoney if @buyer.balance < @passive_trade.offered_price
+  end
+
+  def perform_transaction
+    ActiveRecord::Base.transaction do
+      @buyer.withdrawal(@passive_trade.offered_price)
+      @user.deposit(@passive_trade.offered_price)
+      @user_inventory.change_owner(@buyer, @passive_trade.offered_price)
+      @passive_trade.update!(status: 2)
+      true
+
+    rescue StandardError
+      false
     end
   end
 
@@ -103,3 +146,4 @@ class Api::V1::TradesController < BaseController
     params.require(:trade).permit(:seller_id, :seller_inventory_id, :offered_price)
   end
 end
+# rubocop:enable Metrics/ClassLength

@@ -19,7 +19,11 @@ class User < ApplicationRecord
   after_initialize :add_token
 
   def withdrawal(sum)
-    update!(balance: self.balance -= sum)
+    update!(balance: balance - sum)
+  end
+
+  def deposit(sum)
+    update!(balance: balance + sum)
   end
 
   private

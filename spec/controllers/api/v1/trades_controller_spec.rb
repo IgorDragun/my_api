@@ -139,6 +139,103 @@ RSpec.describe Api::V1::TradesController, type: :controller do
     end
   end
 
+  describe "POST /accept" do
+    subject(:send_request) { post :accept, params: params }
+
+    let(:params) { { api_token: user.token, trade_id: trade.id } }
+    let(:user) { create(:user, balance: balance) }
+    let(:balance) { 1000 }
+    let(:trade) do
+      create(:trade, buyer_id: buyer.id, seller_id: user.id, seller_inventory_id: inventory.id,
+                     offered_price: offered_price)
+    end
+    let(:offered_price) { 99 }
+    let(:buyer) { create(:user, name: "Buyer", email: "buyer@gmail.com", balance: balance) }
+    let(:inventory) { create(:inventory, user_id: user.id, cost: cost) }
+    let(:cost) { 10 }
+
+    include_examples "check user authenticate"
+
+    context "when all checks have been completed successfully" do
+      before do
+        send_request
+
+        buyer.reload
+        user.reload
+        inventory.reload
+      end
+
+      it "reduces buyer's balance" do
+        expect(buyer.balance).to eq(balance - trade.offered_price)
+      end
+
+      it "increases seller's balance" do
+        expect(user.balance).to eq(balance + trade.offered_price)
+      end
+
+      it "changes the cost of the inventory" do
+        expect(inventory.cost).to eq(trade.offered_price)
+      end
+
+      it "changes the owner of the inventory" do
+        expect(inventory.user_id).to eq(buyer.id)
+      end
+    end
+
+    context "when user does not have passive trades" do
+      let(:trade) { create(:trade, buyer_id: buyer.id, seller_id: user.id + 1) }
+
+      it "returns the error" do
+        send_request
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when user does not have definitly passive trade" do
+      let(:params) { { api_token: user.token, trade_id: trade.id + 1 } }
+
+      it "returns the error" do
+        send_request
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when trade does not have the status waiting_for_accept" do
+      let(:trade) do
+        create(:trade, buyer_id: buyer.id, seller_id: user.id, seller_inventory_id: inventory.id,
+                       offered_price: offered_price, status: 4)
+      end
+
+      it "returns the error" do
+        send_request
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when user does not have the inventory" do
+      let(:inventory) { create(:inventory, user_id: user.id + 1, cost: cost) }
+
+      it "returns the error" do
+        send_request
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when buyer does not have enough money" do
+      let(:buyer) { create(:user, name: "Buyer", email: "buyer@gmail.com", balance: offered_price - 1) }
+
+      it "returns the error" do
+        send_request
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+  end
+
   describe "POST /cancel" do
     subject(:send_request) { post :cancel, params: params }
 

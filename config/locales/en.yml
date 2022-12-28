@@ -18,6 +18,9 @@ en:
     not_enough_money:
       message: "Do not enough money."
       status: 422
+    buyer_does_not_have_enough_money:
+      message: "Buyer does not have enough money."
+      status: 422
     not_enough_items:
       message: "Do not enough items."
       status: 422
@@ -31,10 +34,10 @@ en:
       message: "Inventory not found."
       status: 404
     active_trades_do_not_exist:
-      message: "User does not exist active trades."
+      message: "User does not have active trades."
       status: 404
     passive_trades_do_not_exist:
-      message: "User does not exist passive trades."
+      message: "User does not have passive trades."
       status: 404
     trade_not_found:
       message: "Trade not found."
@@ -45,6 +48,9 @@ en:
     trade_can_not_be_declined:
       message: "Trade can not be declined."
       status: 422
+    trade_can_not_be_accepted:
+      message: "Trade can not be accepted."
+      status: 422
 
   messages:
     items:
@@ -54,4 +60,6 @@ en:
         "Trade was successfully canceled."
       trade_was_declined:
         "Trade was successfully declined."
+      trade_was_accepted:
+        "Trade was successfully accepted. Please, check your balance."
     something_was_wrong: "Something was wrong. Check the data and try again."
