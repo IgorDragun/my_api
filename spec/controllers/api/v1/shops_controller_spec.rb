@@ -12,7 +12,7 @@ RSpec.describe Api::V1::ShopsController, type: :controller do
     end
 
     let(:params) { { api_token: user.token } }
-    let(:user) { create(:user) }
+    let(:user) { build(:user) }
     let!(:shop) { create(:shop) }
     let(:result) { { shops: [shop] } }
 

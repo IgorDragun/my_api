@@ -1,9 +1,26 @@
 # frozen_string_literal: true
 
 require "rails_helper"
+require "shared_examples/authenticate"
 require "shared_examples/trades"
 
 RSpec.describe Api::V1::TradesController, type: :controller do
+  shared_examples "returns the error not_found" do
+    it "returns the error" do
+      send_request
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  shared_examples "returns the error unprocessable_entity" do
+    it "returns the error" do
+      send_request
+
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+  end
+
   describe "POST /create" do
     subject(:send_request) { post :create, params: params }
 
@@ -26,44 +43,38 @@ RSpec.describe Api::V1::TradesController, type: :controller do
         expect { send_request }.not_to change(Trade, :count)
       end
 
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
+      include_examples "returns the error unprocessable_entity"
     end
 
     include_examples "check user authenticate"
     include_examples "check seller availability"
     include_examples "check seller inventory availability"
 
-    context "when all necessary params exist" do
-      context "when all the params are valid" do
-        it "creates new trade" do
-          expect { send_request }.to change(Trade, :count).by(1)
-        end
-
-        it "returns success status" do
-          send_request
-
-          expect(response).to have_http_status(:success)
-        end
+    context "when all necessary params are valid and exist" do
+      it "creates new trade" do
+        expect { send_request }.to change(Trade, :count).by(1)
       end
 
-      context "when not all the params are valid" do
-        let(:params) do
-          {
-            api_token: user.token,
-            trade: {
-              seller_id: seller.id,
-              seller_inventory_id: seller_inventory.id,
-              offered_price: -10.00
-            }
+      it "returns success status" do
+        send_request
+
+        expect(response).to have_http_status(:success)
+      end
+    end
+
+    context "when not all necessary params are valid" do
+      let(:params) do
+        {
+          api_token: user.token,
+          trade: {
+            seller_id: seller.id,
+            seller_inventory_id: seller_inventory.id,
+            offered_price: -10.00
           }
-        end
-
-        include_examples "does not create new trade and returns the error"
+        }
       end
+
+      include_examples "does not create new trade and returns the error"
     end
 
     context "when not all necessary params exist" do
@@ -102,11 +113,7 @@ RSpec.describe Api::V1::TradesController, type: :controller do
     end
 
     context "when user does not have active trades" do
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:not_found)
-      end
+      include_examples "returns the error not_found"
     end
   end
 
@@ -131,11 +138,7 @@ RSpec.describe Api::V1::TradesController, type: :controller do
     end
 
     context "when user does not have passive trades" do
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:not_found)
-      end
+      include_examples "returns the error not_found"
     end
   end
 
@@ -183,23 +186,15 @@ RSpec.describe Api::V1::TradesController, type: :controller do
     end
 
     context "when user does not have passive trades" do
-      let(:trade) { create(:trade, buyer_id: buyer.id, seller_id: user.id + 1) }
+      let(:trade) { build_stubbed(:trade, buyer_id: buyer.id, seller_id: user.id + 1) }
 
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:not_found)
-      end
+      include_examples "returns the error not_found"
     end
 
-    context "when user does not have definitly passive trade" do
+    context "when user does not have certain passive trade" do
       let(:params) { { api_token: user.token, trade_id: trade.id + 1 } }
 
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:not_found)
-      end
+      include_examples "returns the error not_found"
     end
 
     context "when trade does not have the status waiting_for_accept" do
@@ -208,31 +203,19 @@ RSpec.describe Api::V1::TradesController, type: :controller do
                        offered_price: offered_price, status: 4)
       end
 
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
+      include_examples "returns the error unprocessable_entity"
     end
 
     context "when user does not have the inventory" do
-      let(:inventory) { create(:inventory, user_id: user.id + 1, cost: cost) }
+      let(:inventory) { build_stubbed(:inventory, user_id: user.id + 1, cost: cost) }
 
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:not_found)
-      end
+      include_examples "returns the error not_found"
     end
 
     context "when buyer does not have enough money" do
       let(:buyer) { create(:user, name: "Buyer", email: "buyer@gmail.com", balance: offered_price - 1) }
 
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
+      include_examples "returns the error unprocessable_entity"
     end
   end
 
@@ -256,31 +239,19 @@ RSpec.describe Api::V1::TradesController, type: :controller do
     context "when user does not have active trades" do
       let(:trade) { build_stubbed(:trade, buyer_id: user.id + 1) }
 
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:not_found)
-      end
+      include_examples "returns the error not_found"
     end
 
     context "when user's active trades do not include required trade" do
       let(:params) { { api_token: user.token, trade_id: trade.id + 1 } }
 
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:not_found)
-      end
+      include_examples "returns the error not_found"
     end
 
     context "when required trade's status is not waiting_for_accept" do
       let(:trade) { create(:trade, buyer_id: user.id, seller_id: seller.id, status: 2) }
 
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
+      include_examples "returns the error unprocessable_entity"
     end
   end
 
@@ -304,31 +275,19 @@ RSpec.describe Api::V1::TradesController, type: :controller do
     context "when user does not have passive trades" do
       let(:trade) { build_stubbed(:trade, seller_id: user.id + 1) }
 
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:not_found)
-      end
+      include_examples "returns the error not_found"
     end
 
     context "when user's passive trades do not include required trade" do
       let(:params) { { api_token: user.token, trade_id: trade.id + 1 } }
 
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:not_found)
-      end
+      include_examples "returns the error not_found"
     end
 
     context "when required trade's status is not waiting_for_accept" do
       let(:trade) { create(:trade, buyer_id: buyer.id, seller_id: user.id, status: 2) }
 
-      it "returns the error" do
-        send_request
-
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
+      include_examples "returns the error unprocessable_entity"
     end
   end
 end

@@ -24,13 +24,10 @@ RSpec.describe User, type: :model do
     it { is_expected.to validate_presence_of(:token) }
     it { is_expected.to validate_presence_of(:password) }
     it { is_expected.to validate_presence_of(:password_confirmation) }
-
     it { is_expected.to validate_uniqueness_of(:name) }
     it { is_expected.to validate_uniqueness_of(:email) }
-
     it { is_expected.to validate_length_of(:name) }
     it { is_expected.to validate_length_of(:password) }
-
     it { is_expected.to validate_numericality_of(:balance) }
   end
 
@@ -45,6 +42,14 @@ RSpec.describe User, type: :model do
 
     it "reduces user balance by item price" do
       expect { user.withdrawal(item.price) }.to change(user, :balance).by(- item.price)
+    end
+  end
+
+  describe "#deposit" do
+    let(:item) { build(:item) }
+
+    it "increases user balance by item price" do
+      expect { user.deposit(item.price) }.to change(user, :balance).by(item.price)
     end
   end
 end

@@ -30,7 +30,7 @@ class Api::V1::TradesController < BaseController
 
   def accept
     check_trade_status!(:accept)
-    check_inventory!
+    check_inventory_presence!
     check_buyer_balance!
     result = perform_transaction
 
@@ -76,7 +76,7 @@ class Api::V1::TradesController < BaseController
     end
   end
 
-  def check_inventory!
+  def check_inventory_presence!
     @user_inventory ||= @user.inventories.find_by(id: @passive_trade.seller_inventory_id)
 
     raise ApiExceptions::InventoryNotFound unless @user_inventory

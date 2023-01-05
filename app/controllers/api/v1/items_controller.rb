@@ -14,7 +14,6 @@ class Api::V1::ItemsController < BaseController
   end
 
   def buy_item
-    check_user_items
     check_user_balance
     check_item_count
 
@@ -45,10 +44,6 @@ class Api::V1::ItemsController < BaseController
     @item = @items.find_by(id: params[:item_id].to_i)
 
     raise ApiExceptions::ItemNotFound unless @item
-  end
-
-  def check_user_items
-    raise ApiExceptions::ItemAlreadyBought if @user.inventories.find_by(name: @item.name)
   end
 
   def check_user_balance

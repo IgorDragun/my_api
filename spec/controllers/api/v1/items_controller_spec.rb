@@ -11,7 +11,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     allow(Shop).to receive(:find_by).with(id: params[:shop_id]).and_return(shop)
   end
 
-  let(:user) { create(:user) }
+  let(:user) { build(:user) }
   let(:shop) { create(:shop) }
   let(:items) { shop.items }
   let(:item) { create(:item, shop_id: shop.id) }
@@ -76,17 +76,8 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       end
     end
 
-    # rubocop:disable RSpec/LetSetup
-    context "when the item is already bought" do
-      let(:inventories) { user.inventories }
-      let!(:inventory) { create(:inventory, name: item.name, user_id: user.id) }
-
-      include_examples "check item buy availability"
-    end
-    # rubocop:enable RSpec/LetSetup
-
     context "when the user does not have enough money" do
-      let(:user) { create(:user, balance: item.price - 1) }
+      let(:user) { build(:user, balance: item.price - 1) }
 
       include_examples "check item buy availability"
     end
