@@ -1,0 +1,7 @@
+development:
+  :concurrency: 5
+production:
+  :concurrency: 15
+:queues:
+  - default
+:max_retries: 3

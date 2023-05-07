@@ -1,6 +1,9 @@
 # frozen_string_literal: true
+require "sidekiq/web"
 
 Rails.application.routes.draw do
+  mount Sidekiq::Web => "/sidekiq"
+
   namespace :api do
     namespace :v1 do
       resources :users, only: :create
@@ -17,6 +20,9 @@ Rails.application.routes.draw do
         post "accept"
         post "cancel"
         post "decline"
+      end
+      resources :items do
+        get "statistic", on: :collection
       end
     end
   end

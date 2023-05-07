@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class Api::V1::ItemsController < BaseController
-  before_action :set_shop
-  before_action :set_items
+  before_action :set_shop, except: :statistic
+  before_action :set_items, except: :statistic
   before_action :set_item, only: %i[show buy_item]
 
   def index
@@ -20,10 +20,18 @@ class Api::V1::ItemsController < BaseController
     result = perform_transaction
 
     if result
+      update_statistic
+
       api_response(message: I18n.t("messages.items.item_was_bought"))
     else
       api_response(message: I18n.t("messages.something_was_wrong"))
     end
+  end
+
+  def statistic
+    response_data = statistic_data
+
+    api_response(items: build_items_data(response_data))
   end
 
   private
@@ -64,5 +72,19 @@ class Api::V1::ItemsController < BaseController
     rescue StandardError
       false
     end
+  end
+
+  def update_statistic
+    UpdateStatsJob.perform_later(@item.id)
+  end
+
+  def statistic_data
+    connection = StatsServiceConnection.new
+    connection.send_get
+  end
+
+  def build_items_data(data)
+    items_data = JSON.parse(data.body.chomp)
+    items_data.map { |inner_array| { id: inner_array[0], count: inner_array[1] } }
   end
 end

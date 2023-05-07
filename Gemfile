@@ -26,6 +26,14 @@ gem 'bcrypt', '~> 3.1.7'
 
 gem 'valid_email2', '~> 4.0'
 
+gem 'faraday', '~> 2.7'
+
+gem 'sidekiq', '~> 6.0'
+
+gem "webmock", "~> 3.12"
+
+gem 'dotenv-rails', '~> 2.0', groups: %i[development test]
+
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
