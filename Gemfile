@@ -36,6 +36,8 @@ gem 'dotenv-rails', '~> 2.0', groups: %i[development test]
 
 gem 'bullet', group: :development
 
+gem 'simplecov', require: false, group: :test
+
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
