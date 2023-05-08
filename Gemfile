@@ -34,6 +34,8 @@ gem "webmock", "~> 3.12"
 
 gem 'dotenv-rails', '~> 2.0', groups: %i[development test]
 
+gem 'bullet', group: :development
+
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
