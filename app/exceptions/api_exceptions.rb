@@ -2,7 +2,6 @@
 
 module ApiExceptions
   class BaseExceptions < StandardError; end
-
   class CommonError < BaseExceptions; end
   class UserNotFound < BaseExceptions; end
   class ShopNotFound < BaseExceptions; end
