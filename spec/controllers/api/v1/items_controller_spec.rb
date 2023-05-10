@@ -60,6 +60,8 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     include_examples "check item availability"
 
     context "when the item was successfully bought" do
+      before { allow(UpdateStatsJob).to receive(:perform_later).with(item.id) }
+
       it "reduces the user balance" do
         expect { send_request }.to change(user, :balance).by(- item.price)
       end
@@ -74,6 +76,12 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       it "increases the user inventories count" do
         expect { send_request }.to change(user.inventories, :count).by(1)
       end
+
+      it "sends data to service stats" do
+        send_request
+
+        expect(UpdateStatsJob).to have_received(:perform_later).with(item.id)
+      end
     end
 
     context "when the user does not have enough money" do
@@ -86,6 +94,28 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       let(:item) { create(:item, shop_id: shop.id, count: 0) }
 
       include_examples "check item buy availability"
+    end
+  end
+
+  describe "GET /statistic" do
+    subject(:send_request) { get :statistic, params: params }
+
+    let(:params) { { api_token: user.token } }
+    let(:connection) { StatsServiceConnection.new }
+    let(:statistic_data) { instance_double(Faraday::Response, body: "[[1, 1]]\n") }
+    let(:result) { { items: [{ id: 1, count: 1 }] } }
+
+    before do
+      allow(StatsServiceConnection).to receive(:new).and_return(connection)
+      allow(connection).to receive(:send_get).and_return(statistic_data)
+    end
+
+    include_examples "check user authenticate"
+
+    it "returns items statistic data" do
+      send_request
+
+      expect(response.body).to eq result.to_json
     end
   end
 end
