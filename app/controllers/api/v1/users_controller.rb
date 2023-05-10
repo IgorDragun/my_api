@@ -4,12 +4,12 @@ class Api::V1::UsersController < BaseController
   skip_before_action :authenticate!
 
   def create
-    @user = User.new(user_params)
+    user = User.new(user_params)
 
-    if @user.save
-      api_response({ api_token: @user.token })
+    if user.save
+      api_response({ api_token: user.token })
     else
-      api_response({ errors: @user.errors })
+      api_response({ errors: user.errors })
     end
   end
 

@@ -2,8 +2,8 @@
 
 class Api::V1::InventoriesController < BaseController
   def index
-    @inventories = @user.inventories
+    inventories = @user.inventories
 
-    api_response({ inventories: @inventories })
+    api_response({ inventories: inventories })
   end
 end

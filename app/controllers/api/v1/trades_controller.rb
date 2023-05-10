@@ -3,20 +3,19 @@
 # rubocop:disable Metrics/ClassLength
 
 class Api::V1::TradesController < BaseController
-  before_action :find_seller, only: :create
   before_action :find_seller_inventory, only: :create
-  before_action :find_all_active_trades_by_user, only: %i[cancel active_trades]
+  before_action :find_all_active_trades_by_user, only: %i[active_trades cancel]
   before_action :find_required_active_trade_by_user, only: :cancel
-  before_action :find_all_passive_trades_by_user, only: %i[decline passive_trades accept]
-  before_action :find_required_passive_trade_by_user, only: %i[decline accept]
+  before_action :find_all_passive_trades_by_user, only: %i[passive_trades accept decline]
+  before_action :find_required_passive_trade_by_user, only: %i[accept decline]
 
   def create
-    @trade = Trade.new(trade_params)
+    trade = Trade.new(trade_params)
 
-    if @trade.save
-      api_response(trade_info: @trade)
+    if trade.save
+      api_response(trade_info: trade)
     else
-      api_response(errors: @trade.errors)
+      api_response(errors: trade.errors)
     end
   end
 
@@ -102,16 +101,14 @@ class Api::V1::TradesController < BaseController
     end
   end
 
-  def find_seller
-    @seller = User.find_by(id: permitted_params[:seller_id].to_i)
-
-    raise ApiExceptions::SellerNotFound unless @seller
-  end
-
   def find_seller_inventory
-    @seller_inventory = @seller.inventories.find_by(id: permitted_params[:seller_inventory_id].to_i)
+    seller = User.find_by(id: permitted_params[:seller_id].to_i)
 
-    raise ApiExceptions::InventoryNotFound unless @seller_inventory
+    raise ApiExceptions::SellerNotFound unless seller
+
+    seller_inventory = seller.inventories.find_by(id: permitted_params[:seller_inventory_id].to_i)
+
+    raise ApiExceptions::InventoryNotFound unless seller_inventory
   end
 
   def find_all_active_trades_by_user

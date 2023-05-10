@@ -2,8 +2,8 @@
 
 class Api::V1::ShopsController < BaseController
   def index
-    @shops = Shop.all
+    shops = Shop.all
 
-    api_response({ shops: @shops })
+    api_response({ shops: shops })
   end
 end
