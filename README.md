@@ -1,24 +1,9 @@
-# README
+## MyAPI
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+### Short description.
 
-Things you may want to cover:
+It is an **API application** that I developed to improve my understandig of how APIs work in Rails applications.
 
-* Ruby version
+To understand how this application works, imagine an online platform that includes users and shops. The shops have items. Users can view shops, items for each shop and purchase them. The bought items are then available in the user's inventory. Additionally, users can trade with other users.
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+This applications is related to https://github.com/IgorDragun/stats_service, which is a service that processes and saves data of bought items separately for each user.
